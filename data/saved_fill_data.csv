@@ -1,0 +1,2 @@
+invoice_nr,invoice_place,invoice_date,payment_method,seller_name,seller_adress,seller_postal_code,seller_city,seller_nip,seller_regon,seller_bank,seller_account_nr,buyer_name,buyer_adress,buyer_postal_code,buyer_city,buyer_nip,buyer_regon
+1,Warszawa,2024/03/07,przelew,nazwaA,adresA,99-300,Warszawa,423824324234,342423423444,mbank,321913213293213129,nazwaB,adresBe,91-300,Gdañsk,32423493429234,43224932439

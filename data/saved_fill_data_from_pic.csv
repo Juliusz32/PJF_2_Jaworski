@@ -1,0 +1,2 @@
+invoice_nr,invoice_place,invoice_date,payment_method,seller_name,seller_adress,seller_postal_code,seller_city,seller_nip,seller_regon,seller_bank,seller_account_nr,buyer_name,buyer_adress,buyer_postal_code,buyer_city,buyer_nip,buyer_regon
+1,Warszawa,06.01-2024,przelew,Jan Kowalski SK,ul zie³óna s/12,02-913,Warszawa,5685502304,358937643,mbank,92 1240 5862 0095 0772 0872 2531,Anna SK,ul. Niebieska 6/66,02-914,Warszawa,5359324227,934010060
