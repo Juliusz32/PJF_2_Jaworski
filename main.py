@@ -11,6 +11,8 @@ tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 tess.tessdata_dir_config = '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"'
 my_config = r'--oem 3 --psm 6 -l pol'
 
+from PIL import Image, ImageTk
+
 pd.set_option('display.max_columns', None)
 ctk.set_default_color_theme("blue")
 ctk.set_appearance_mode("dark")
@@ -51,7 +53,7 @@ def initializeSideMenu(main_window):
 
     def from_data_menu():
         side_bar.destroy()
-        fromDataSideMenu(main_window)
+        fromDataSideMenu()
 
     def from_picture_menu():
         side_bar.destroy()
@@ -105,7 +107,7 @@ def initializeSideMenu(main_window):
     label_faktury = ctk.CTkLabel(side_bar, text="Tryb wyświetlania", font=("Aharoni", 16))
     label_faktury.place(relx=0.5, rely=0.75, anchor="n")
 
-def fromDataSideMenu(main_widnow):
+def fromDataSideMenu():
     global bg_c
     y_position = 0.65
     side_bar = ctk.CTkFrame(main_window, width=400, height=720, bg_color=bg_c)
@@ -733,16 +735,63 @@ def fromDataSideMenu(main_widnow):
 
 def initialize_from_picture_menu(main_window):
     global picture_path
-    picture_menu = ctk.CTkFrame(main_window, width=800, height=500, bg_color=bg_c)
-    picture_menu.place(relx=0.5, rely=0.153, anchor='n')
-    picture_menu.pack_propagate(False)
+    picture_menu = ctk.CTkFrame(main_window, width=400, height=720, bg_color=bg_c)
+    picture_menu.pack(side="left", fill="none", padx=10, pady=10)
+
+    picture_preview = ctk.CTkFrame(main_window, width=860, height=720, bg_color=bg_c)
+    picture_preview.pack(side="right", fill="none", padx=10, pady=10)
+    picture_preview.pack_propagate(False)
+
+    label_picture = ctk.CTkLabel(master=picture_preview, text="Pobierz obrazek",  font=("Aharoni", 48))
+    label_picture.place(relx=0.5, rely=0.45, anchor="n")
+
+
+    label_faktury = ctk.CTkLabel(picture_menu, text="Faktury", font=("Aharoni", 72))
+    label_faktury.place(relx=0.5, rely=0, anchor="n")
+
 
     def switch_menu():
         picture_menu.destroy()
+        picture_preview.destroy()
         initializeSideMenu(main_window)
 
-    label_faktury = ctk.CTkLabel(picture_menu, text="Faktury", font=("Aharoni", 72))
-    label_faktury.place(relx=0.5, rely=0.1, anchor="n")
+    def get_path():
+        global picture_path
+        picture_path = entry_picture_path.get()
+        show_picture()
+
+    def show_picture():
+        global picture_path
+        img = ctk.CTkImage(light_image=Image.open(picture_path), size=(750, 650))
+        label_picture = ctk.CTkLabel(master=picture_preview, image=img)
+        label_picture.place(relx=0.5, rely=0.035, anchor="n")
+
+    def rotate_picture():
+        global picture_path
+        img = Image.open(picture_path)
+        img = img.rotate(90)
+        img.save("data/image_processed.jpg")
+        picture_path = "data/image_processed.jpg"
+        show_picture()
+
+    def grey_scale():
+        global picture_path
+        img = Image.open(picture_path)
+        img = img.convert('L')
+        img.save("data/image_processed.jpg")
+        picture_path = "data/image_processed.jpg"
+        show_picture()
+
+    def remove_background():
+        global picture_path
+        img = Image.open(picture_path)
+        img = img.convert('L')
+        img = img.point(lambda x: 0 if x < 150 else 255, '1')
+        img.save("data/image_processed.jpg")
+        picture_path = "data/image_processed.jpg"
+        show_picture()
+
+
 
     button_back = ctk.CTkButton(
         picture_menu,
@@ -752,28 +801,65 @@ def initialize_from_picture_menu(main_window):
         height=50,
         font=("Aharoni", 16)
     )
-    button_back.place(relx=0.7, rely=0.8, anchor="n")
+    button_back.place(relx=0.5, rely=0.85, anchor="n")
 
     button_generate = ctk.CTkButton(
         picture_menu,
-        text='Pobierz dane',
-        command=image_recognition,
-        width=240,
+        text='Zatwierdź',
+        command=get_path,
+        width=50,
+        height=25,
+        font=("Aharoni", 16)
+    )
+    button_generate.place(relx=0.82, rely=0.2, anchor="n")
+
+    label = ctk.CTkLabel(picture_menu, text="Podaj ścieżkę do obrazka", font=("Aharoni", 16))
+    label.place(relx=0.5, rely=0.15, anchor="n")
+
+    label = ctk.CTkLabel(picture_menu, text="Przygotuj obrazek", font=("Aharoni", 16))
+    label.place(relx=0.5, rely=0.25, anchor="n")
+
+    button_rotate = ctk.CTkButton(
+        picture_menu,
+        text='Obróć',
+        command=rotate_picture,
+        width=100,
         height=50,
         font=("Aharoni", 16)
     )
-    button_generate.place(relx=0.3, rely=0.8, anchor="n")
+    button_rotate.place(relx=0.5, rely=0.3, anchor="n")
 
-    label = ctk.CTkLabel(picture_menu, text="Podaj ścieżkę do obrazka", font=("Aharoni", 16))
-    label.place(relx=0.5, rely=0.59, anchor="n")
+    button_grey_scale = ctk.CTkButton(
+        picture_menu,
+        text='Skala szarości',
+        command=grey_scale,
+        width=100,
+        height=50,
+        font=("Aharoni", 16)
+    )
+    button_grey_scale.place(relx=0.2, rely=0.3, anchor="n")
+
+    button_background_remove = ctk.CTkButton(
+        picture_menu,
+        text='Usuń tło',
+        command=remove_background,
+        width=100,
+        height=50,
+        font=("Aharoni", 16)
+    )
+    button_background_remove.place(relx=0.78, rely=0.3, anchor="n")
+
+
+
+
 
     entry_picture_path = ctk.CTkEntry(
         master=picture_menu,
-        width=400,
+        width=250,
         height=25,
         corner_radius=5
     )
-    entry_picture_path.place(relx=0.5, rely=0.65, anchor="n")
+    entry_picture_path.place(relx=0.4, rely=0.2, anchor="n")
     entry_picture_path.insert(1, 'data/image.jpg')
     picture_path = entry_picture_path.get()
 def mode_selected(mode):
