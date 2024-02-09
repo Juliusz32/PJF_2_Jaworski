@@ -29,6 +29,7 @@ from FromData import save_products_back
 from FromData import prepare_to_generate_invoice_back
 from imageRecognition import image_recognition_back
 from Plots import prepare_plots
+from imageRecognition import mark_recognized_data
 def initializeMainWindow():
     root = tk.Tk()
     root.geometry('1280x720')
@@ -758,11 +759,10 @@ def initialize_from_picture_menu(main_window):
     def get_path():
         global picture_path
         picture_path = entry_picture_path.get()
-        show_picture()
+        show_picture(picture_path)
 
-    def show_picture():
-        global picture_path
-        img = ctk.CTkImage(light_image=Image.open(picture_path), size=(750, 650))
+    def show_picture(path):
+        img = ctk.CTkImage(light_image=Image.open(path), size=(750, 650))
         label_picture = ctk.CTkLabel(master=picture_preview, image=img)
         label_picture.place(relx=0.5, rely=0.035, anchor="n")
 
@@ -772,7 +772,7 @@ def initialize_from_picture_menu(main_window):
         img = img.rotate(90)
         img.save("data/image_processed.jpg")
         picture_path = "data/image_processed.jpg"
-        show_picture()
+        show_picture(picture_path)
 
     def grey_scale():
         global picture_path
@@ -780,7 +780,7 @@ def initialize_from_picture_menu(main_window):
         img = img.convert('L')
         img.save("data/image_processed.jpg")
         picture_path = "data/image_processed.jpg"
-        show_picture()
+        show_picture(picture_path)
 
     def remove_background():
         global picture_path
@@ -789,8 +789,13 @@ def initialize_from_picture_menu(main_window):
         img = img.point(lambda x: 0 if x < 150 else 255, '1')
         img.save("data/image_processed.jpg")
         picture_path = "data/image_processed.jpg"
-        show_picture()
+        show_picture(picture_path)
 
+    def image_recognition():
+        global picture_path
+        mark_recognized_data(picture_path)
+        image_recognition_back(picture_path)
+        show_picture("data/recognized_text.jpg")
 
 
     button_back = ctk.CTkButton(
@@ -802,6 +807,16 @@ def initialize_from_picture_menu(main_window):
         font=("Aharoni", 16)
     )
     button_back.place(relx=0.5, rely=0.85, anchor="n")
+
+    button_back = ctk.CTkButton(
+        picture_menu,
+        text='Pobierz dane',
+        command=image_recognition,
+        width=240,
+        height=50,
+        font=("Aharoni", 16)
+    )
+    button_back.place(relx=0.5, rely=0.75, anchor="n")
 
     button_generate = ctk.CTkButton(
         picture_menu,
@@ -849,10 +864,6 @@ def initialize_from_picture_menu(main_window):
     )
     button_background_remove.place(relx=0.78, rely=0.3, anchor="n")
 
-
-
-
-
     entry_picture_path = ctk.CTkEntry(
         master=picture_menu,
         width=250,
@@ -881,9 +892,7 @@ def mode_selected(mode):
     side_bar.destroy()
     initializeSideMenu(main_window)
 
-def image_recognition():
-    global picture_path
-    image_recognition_back(picture_path)
+
 
 def initialize_plot_menu():
     plot_menu = ctk.CTkFrame(main_window, width=1000, height=500, bg_color=bg_c)

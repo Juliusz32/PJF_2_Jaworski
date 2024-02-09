@@ -3,6 +3,9 @@ import re
 import pytesseract as tess
 import os
 import csv
+import cv2
+
+
 
 tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 tess.tessdata_dir_config = '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"'
@@ -89,3 +92,59 @@ def image_recognition_back(picture_path):
         csv_writer = csv.DictWriter(csvfile, fieldnames=data_dict.keys())
         csv_writer.writeheader()
         csv_writer.writerow(data_dict)
+
+# def mark_recognized_data(picture_path):
+#     img = cv2.imread(picture_path)
+#     #img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+#     text = tess.image_to_string(img, config=my_config)
+#     detections = tess.image_to_data(img, output_type=tess.Output.DICT)
+#     for i in range(len(detections['text'])):
+#         # if int(detections['conf'][i]) > 60:
+#         #     x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], detections['height'][i]
+#         #     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+#         #     cv2.putText(img, detections['text'][i], (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+#         if "sprzedawca" in detections['text'][i].lower():
+#             next_line_index = i + 1
+#             if next_line_index < len(detections['text']):
+#                 next_line_x, next_line_y, next_line_w, next_line_h = detections['left'][next_line_index], detections['top'][next_line_index], detections['width'][next_line_index], detections['height'][next_line_index]
+#                 cv2.rectangle(img, (next_line_x, next_line_y), (next_line_x + next_line_w, next_line_y + next_line_h), (0, 0, 255), 2)
+#                 cv2.putText(img, "Sprzedawca:", (next_line_x, next_line_y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 0, 255), 2)
+#                 seller_name = detections['text'][i]
+#                 print("Seller Name:", seller_name)
+#     cv2.imwrite('data/recognized_text.jpg', img)
+
+def mark_recognized_data(picture_path):
+    img = cv2.imread(picture_path)
+    detections = tess.image_to_data(img, output_type=tess.Output.DICT, config=my_config)
+    for i in range(len(detections['text'])):
+        if "nr" in detections['text'][i].lower():
+            if int(detections['conf'][i]) > 60:
+                x, y, w, h = detections['left'][i+1], detections['top'][i+1], detections['width'][i+1], detections['height'][i+1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "Nr faktury:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                invoice_nr = detections['text'][i+1]
+                print(invoice_nr)
+                i += 3
+                x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], detections['height'][i]
+                cv2.putText(img, "Sprzedawca:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                seller_name = ""
+                while detections['text'][i] != "Mechanizm":
+                    x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], detections['height'][i]
+                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    seller_name = seller_name + detections['text'][i] + " "
+                    i += 1
+                print(seller_name)
+
+        # if "sprzedawca" in detections['text'][i].lower():
+        #     if int(detections['conf'][i]) > 60:
+        #         x, y, w, h = detections['left'][i+4], detections['top'][i+4], detections['width'][i+4], detections['height'][i+4]
+        #         cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        #         cv2.putText(img, "Sprzedawca:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+        #         seller_name = detections['text'][i+4]
+        #         print(seller_name)
+
+    cv2.imwrite('data/recognized_text.jpg', img)
+
+
+
+
