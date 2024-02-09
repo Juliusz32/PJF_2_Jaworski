@@ -794,7 +794,7 @@ def initialize_from_picture_menu(main_window):
     def image_recognition():
         global picture_path
         mark_recognized_data(picture_path)
-        image_recognition_back(picture_path)
+        #image_recognition_back(picture_path)
         show_picture("data/recognized_text.jpg")
 
 
