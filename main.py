@@ -27,9 +27,9 @@ picture_path = ' '
 from FromData import save_data_back
 from FromData import save_products_back
 from FromData import prepare_to_generate_invoice_back
-from imageRecognition import image_recognition_back
 from Plots import prepare_plots
 from imageRecognition import mark_recognized_data
+
 def initializeMainWindow():
     root = tk.Tk()
     root.geometry('1280x720')
@@ -794,9 +794,7 @@ def initialize_from_picture_menu(main_window):
     def image_recognition():
         global picture_path
         mark_recognized_data(picture_path)
-        #image_recognition_back(picture_path)
         show_picture("data/recognized_text.jpg")
-
 
     button_back = ctk.CTkButton(
         picture_menu,
