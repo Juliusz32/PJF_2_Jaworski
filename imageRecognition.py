@@ -1,3 +1,4 @@
+import numpy as np
 from PIL import Image
 import re
 import pytesseract as tess
@@ -119,6 +120,9 @@ def mark_recognized_data(picture_path):
     seller_address_flag = True
     seller_nip_flag = True
     seller_regon_flag = True
+    seller_bank_flag = True
+    seller_account_nr_flag = True
+    buyer_address_flag = True
     for i in range(len(detections['text'])):
         if "nr" in detections['text'][i].lower():
             if int(detections['conf'][i]) > 60:
@@ -126,6 +130,7 @@ def mark_recognized_data(picture_path):
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 1)
                 cv2.putText(img, "Nr faktury:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 invoice_nr = detections['text'][i+1]
+                print("nr")
                 print(invoice_nr)
         if "miejsce" in detections['text'][i].lower():
             if int(detections['conf'][i]) > 60:
@@ -144,6 +149,7 @@ def mark_recognized_data(picture_path):
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(img, "Data:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 invoice_date = detections['text'][i + 1]
+                print("data faktury")
                 print(invoice_date)
         if "sprzedawca" in detections['text'][i].lower():
             if int(detections['conf'][i]) > 60:
@@ -159,6 +165,7 @@ def mark_recognized_data(picture_path):
                     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                     seller_name = seller_name + " " + detections['text'][i+2]
                     i += 1
+                print("sprzedawca")
                 print(seller_name)
         if "adres" in detections['text'][i].lower() and seller_address_flag:
             if int(detections['conf'][i]) > 60:
@@ -183,6 +190,7 @@ def mark_recognized_data(picture_path):
                 seller_address = " ".join(parts[:postal_code_index])
                 seller_postal_code = parts[postal_code_index]
                 seller_city = " ".join(parts[postal_code_index + 1:])
+                print("adres sprzedawcy")
                 print(seller_postal_code)
                 print(seller_city)
                 print(seller_address)
@@ -193,6 +201,7 @@ def mark_recognized_data(picture_path):
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(img, "NIP:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 seller_nip = detections['text'][i + 1]
+                print("nip sprzedawcy")
                 print(seller_nip)
                 seller_nip_flag = False
         if "regon" in detections['text'][i].lower() and seller_regon_flag:
@@ -202,61 +211,100 @@ def mark_recognized_data(picture_path):
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(img, "REGON:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 seller_regon = detections['text'][i + 1]
+                print("regon sprzedawcy")
                 print(seller_regon)
                 seller_regon_flag = False
-
-
-
-
-
-
-
-        #         i += 3
-        #         x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], detections['height'][i]
-        #         cv2.putText(img, "Sprzedawca:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        #         seller_name = ""
-        #         seller_adress = ""
-        #         while detections['text'][i] != "Mechanizm":
-        #             x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], detections['height'][i]
-        #             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #             seller_name = seller_name + detections['text'][i] + " "
-        #             i += 1
-        #         print(seller_name)
-        # if "podzielonej" in detections['text'][i].lower():
-        #     if int(detections['conf'][i]) > 60:
-        #         i += 2
-        #         x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
-        #         detections['height'][i + 1]
-        #         cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #         cv2.putText(img, "Adres:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        #
-        #         index = i
-        #         while detections['text'][i] != "Miejsce":
-        #             if index + 1 <= i:
-        #                 x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], \
-        #                 detections['height'][i]
-        #                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #                 seller_adress = seller_adress + detections['text'][i] + " "
-        #             i += 1
-        #         print(seller_adress)
-        # if "wystawienia" in detections['text'][i].lower():
-        #     if int(detections['conf'][i]) > 60:
-        #         x, y, w, h = detections['left'][i+1], detections['top'][i+1], detections['width'][i+1], detections['height'][i+1]
-        #         cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #         cv2.putText(img, "Miejsce:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        #         invoice_place = detections['text'][i+1]
-        #         print(invoice_place)
-        #     i += 2
-        #     x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], detections['height'][i]
-        #     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        #     cv2.putText(img, "Kod pocztowy:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        #     invoice_place = detections['text'][i]
-        #     print(invoice_place)
-
-
-
-
+        if "bank" in detections['text'][i].lower() and seller_bank_flag:
+            if int(detections['conf'][i]) > 60:
+                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
+                detections['height'][i + 1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "bank:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                seller_bank = detections['text'][i + 1]
+                print("bank sprzedawcy")
+                print(seller_bank)
+                seller_bank_flag = False
+        if "konto" in detections['text'][i].lower() and seller_account_nr_flag:
+            if int(detections['conf'][i]) > 60:
+                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
+                detections['height'][i + 1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "konto:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                seller_account_nr = detections['text'][i + 1]
+                print("sprzedawca konto")
+                print(seller_account_nr)
+                seller_account_nr_flag = False
+        if "forma" in detections['text'][i].lower():
+            if int(detections['conf'][i]) > 60:
+                i = i + 1
+                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], detections['height'][i + 1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "platnosc:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                payment_method = detections['text'][i + 1]
+                print("metoda płatnosci")
+                print(payment_method)
+        if "nabywca" in detections['text'][i].lower():
+            if int(detections['conf'][i]) > 60:
+                i += 3
+                x, y, w, h = detections['left'][i+1], detections['top'][i+1], detections['width'][i+1], detections['height'][i+1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "Nabywca:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                buyer_name = detections['text'][i+1]
+                while True:
+                    if "adres" in detections['text'][i+3].lower():
+                        break
+                    x, y, w, h = detections['left'][i + 2], detections['top'][i + 2], detections['width'][i + 2], detections['height'][i + 2]
+                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    buyer_name = seller_name + " " + detections['text'][i+2]
+                    i += 1
+                print("kupujacy")
+                print(buyer_name)
+        if "adres" in detections['text'][i].lower():
+            if int(detections['conf'][i]) > 60:
+                x, y, w, h = detections['left'][i+1], detections['top'][i+1], detections['width'][i+1], detections['height'][i+1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "adres:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                buyer_address = detections['text'][i+1]
+                while True:
+                    if "nip" in detections['text'][i+3].lower():
+                        break
+                    x, y, w, h = detections['left'][i+2], detections['top'][i+2], detections['width'][i+2], detections['height'][i+2]
+                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    buyer_address = buyer_address + " " + detections['text'][i+2]
+                    i += 1
+                parts = buyer_address.split()
+                postal_code_index = -1
+                for j, part in enumerate(parts):
+                    if "-" in part and len(part) == 6:
+                        postal_code_index = j
+                        break
+                buyer_address = " ".join(parts[:postal_code_index])
+                buyer_postal_code = parts[postal_code_index]
+                buyer_city = " ".join(parts[postal_code_index + 1:])
+                print("adres sprzedawcy")
+                print(buyer_postal_code)
+                print(buyer_city)
+                print(buyer_address)
+        if "nip" in detections['text'][i].lower():
+            if int(detections['conf'][i]) > 60:
+                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
+                detections['height'][i + 1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "NIP:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                buyer_nip = detections['text'][i + 1]
+                print("nip sprzedawcy")
+                print(buyer_nip)
+        if "regon" in detections['text'][i].lower():
+            if int(detections['conf'][i]) > 60:
+                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
+                detections['height'][i + 1]
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, "REGON:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                buyer_regon = detections['text'][i + 1]
+                print("regon sprzedawcy")
+                print(buyer_regon)
     cv2.imwrite('data/recognized_text.jpg', img)
+
 
 
 
