@@ -201,11 +201,6 @@ def mark_recognized_data(picture_path):
                 buyer_regon = detections['text'][i + 1]
                 print("regon sprzedawcy")
                 print(buyer_regon)
-            #     products = ''
-            # while i < len(detections['text']):
-            #     products = products + detections['text'][i]
-            #     i += 1
-            # print(products)
     data_dict = {
         "invoice_nr": invoice_nr or "brak",
         "invoice_place": invoice_place or "brak",

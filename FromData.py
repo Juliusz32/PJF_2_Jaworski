@@ -8,11 +8,11 @@ from docx2pdf import convert
 from NumberToWords import kwota_slownie
 
 
-def save_data_back(data_dict):
+def save_data_back(data_dict, path):
     data_directory = "data"
     if not os.path.exists(data_directory):
         os.makedirs(data_directory)
-    csv_file_path = os.path.join(data_directory, 'saved_fill_data.csv')
+    csv_file_path = os.path.join(data_directory, path)
 
     if os.path.exists(csv_file_path):
         os.remove(csv_file_path)
@@ -22,12 +22,11 @@ def save_data_back(data_dict):
         csv_writer.writeheader()
         csv_writer.writerow(data_dict)
 
-def save_products_back(product_dict):
-    file_path = "data/saved_products.csv"
-    if os.path.exists(file_path):
-        os.remove(file_path)
+def save_products_back(product_dict, path):
+    if os.path.exists(path):
+        os.remove(path)
 
-    with open(file_path, mode='w', newline='', encoding='utf-8') as csv_file:
+    with open(path, mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = product_dict.keys()
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()

@@ -29,6 +29,7 @@ from FromData import save_products_back
 from FromData import prepare_to_generate_invoice_back
 from Plots import prepare_plots
 from imageRecognition import mark_recognized_data
+from ocr_clipboard import select_box
 
 def initializeMainWindow():
     root = tk.Tk()
@@ -55,6 +56,7 @@ def initializeSideMenu(main_window):
     def from_data_menu():
         side_bar.destroy()
         fromDataSideMenu()
+
 
     def from_picture_menu():
         side_bar.destroy()
@@ -109,6 +111,7 @@ def initializeSideMenu(main_window):
     label_faktury.place(relx=0.5, rely=0.75, anchor="n")
 
 def fromDataSideMenu():
+
     global bg_c
     y_position = 0.65
     side_bar = ctk.CTkFrame(main_window, width=400, height=720, bg_color=bg_c)
@@ -118,10 +121,7 @@ def fromDataSideMenu():
     label_faktury = ctk.CTkLabel(side_bar, text="Faktury", font=("Aharoni", 72))
     label_faktury.place(relx=0.5, rely=0, anchor="n")
 
-    def switch_menu():
-        side_bar.destroy()
-        right_window.destroy()
-        initializeSideMenu(main_window)
+
 
     def prepare_data_dict():
         data_dict = {
@@ -160,10 +160,33 @@ def fromDataSideMenu():
 
     def save_data():
         data_dict = prepare_data_dict()
-        save_data_back(data_dict)
+        save_data_back(data_dict, 'saved_fill_data.csv')
+
+    def save_data_button_back():
+        print("save")
+        data_dict = prepare_data_dict()
+        save_data_back(data_dict, 'saved_fill_data_button_back.csv')
+
+    def save_products_button_back():
+        product_dict = prepare_product_dict()
+        save_products_back(product_dict, "data/saved_products_button_back.csv")
+
+    def switch_menu():
+        save_data_button_back()
+        save_products_button_back()
+        side_bar.destroy()
+        right_window.destroy()
+        initializeSideMenu(main_window)
+
 
     def load_data():
         show_data("data/saved_fill_data.csv")
+
+    def load_data_button_back():
+        show_data('data/saved_fill_data_button_back.csv')
+
+    def load_products_button_back():
+        show_products("data/saved_products_button_back.csv")
 
     def load_data_from_pic():
         show_data("data/saved_fill_data_from_pic.csv")
@@ -244,7 +267,12 @@ def fromDataSideMenu():
 
     def save_products():
         product_dict = prepare_product_dict()
-        save_products_back(product_dict)
+        save_products_back(product_dict, "data/saved_products.csv")
+
+    def load_products():
+        show_products("data/saved_products.csv")
+
+
 
     def delete_row():
         global row_number
@@ -255,7 +283,7 @@ def fromDataSideMenu():
             product_frame.grid_rowconfigure(row_number, weight=0)
             row_number-=1
 
-    def load_products():
+    def show_products(csv_file_path):
         global row_number
 
         if (row_number > 0):
@@ -264,7 +292,7 @@ def fromDataSideMenu():
             product_frame.grid_rowconfigure(row_number, weight=0)
             row_number = product_frame.grid_size()[1] -1
 
-        csv_file_path = "data/saved_products.csv"
+
 
         try:
             df = pd.read_csv(csv_file_path)
@@ -636,6 +664,8 @@ def fromDataSideMenu():
         corner_radius=5
     )
     entry_buyer_regon.place(relx=0.5-0.15, rely=y2_position, anchor="n")
+    load_data_button_back()
+
 
     ### PRODUKTY ###
     y2_position += 0.05
@@ -731,6 +761,7 @@ def fromDataSideMenu():
         font=("Aharoni", 16)
     )
     button_load_products.place(relx=0.5, rely=0.5, anchor="n")
+    load_products_button_back()
 
     #########################################################################################################################
 
@@ -815,6 +846,16 @@ def initialize_from_picture_menu(main_window):
         font=("Aharoni", 16)
     )
     button_back.place(relx=0.5, rely=0.75, anchor="n")
+
+    button_ocr_clipboard = ctk.CTkButton(
+        picture_menu,
+        text='OCR do schowka',
+        command=select_box,
+        width=240,
+        height=50,
+        font=("Aharoni", 16)
+    )
+    button_ocr_clipboard.place(relx=0.5, rely=0.65, anchor="n")
 
     button_generate = ctk.CTkButton(
         picture_menu,

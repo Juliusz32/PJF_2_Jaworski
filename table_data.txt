@@ -1,0 +1,31 @@
+FAKTURA
+Faktura nr 1
+Mechanizm podzielonej płatności
+Miejsce wystawienia: Warszawa
+Data wystawienia: 2024/03/07
+Sprzedawca:
+nazwaA
+Adres:
+adresA
+99-300 Warszawa
+NIP: 423824324234
+REGON: 342423423444
+bank: mbank
+konto: 321913213293213129
+Nabywca: Forma płatności: przelew
+nazwaB
+Adres:
+BeBe
+91-300
+NIP: 32423493429234
+REGON: 43224932439
+PKW
+cena |. wartość | var | wartość | wartość
+u
+10.6
+1 1.33 produkt1 s0| so| ę 250.0 | 23.0 s7.5 307.5
+o
+106
+2 1.33 produkt2 100| 2 20.0 | 230 24.6
+0
+wWartość | vAT | wartość | Wartość
