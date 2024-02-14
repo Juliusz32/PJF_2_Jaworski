@@ -1,6 +1,3 @@
-import numpy as np
-from PIL import Image
-import re
 import pytesseract as tess
 import os
 import csv
@@ -21,6 +18,25 @@ def mark_recognized_data(picture_path):
     seller_bank_flag = True
     seller_account_nr_flag = True
     buyer_address_flag = True
+    invoice_nr = "brak"
+    invoice_place = "brak"
+    invoice_date = "brak"
+    payment_method = "brak"
+    seller_name = "brak"
+    seller_address = "brak"
+    seller_postal_code = "brak"
+    seller_city = "brak"
+    seller_nip = "brak"
+    seller_regon = "brak"
+    seller_bank = "brak"
+    seller_account_nr = "brak"
+    buyer_name = "brak"
+    buyer_address = "brak"
+    buyer_postal_code = "brak"
+    buyer_city = "brak"
+    buyer_nip = "brak"
+    buyer_regon = "brak"
+
     for i in range(len(detections['text'])):
         if "nr" in detections['text'][i].lower():
             if int(detections['conf'][i]) > 60:
@@ -92,23 +108,23 @@ def mark_recognized_data(picture_path):
                 print(seller_postal_code)
                 print(seller_city)
                 print(seller_address)
-        if "nip" in detections['text'][i].lower() and seller_nip_flag:
+        if (len(detections['text'][i]) == 10 and seller_nip_flag and detections['text'][i].isdigit()):
             if int(detections['conf'][i]) > 60:
-                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
-                detections['height'][i + 1]
+                x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], \
+                detections['height'][i]
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(img, "NIP:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                seller_nip = detections['text'][i + 1]
+                seller_nip = detections['text'][i]
                 print("nip sprzedawcy")
                 print(seller_nip)
                 seller_nip_flag = False
-        if "regon" in detections['text'][i].lower() and seller_regon_flag:
+        if (len(detections['text'][i]) == 9 and seller_regon_flag and detections['text'][i].isdigit()):
             if int(detections['conf'][i]) > 60:
-                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
-                detections['height'][i + 1]
+                x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], \
+                detections['height'][i]
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(img, "REGON:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                seller_regon = detections['text'][i + 1]
+                seller_regon = detections['text'][i]
                 print("regon sprzedawcy")
                 print(seller_regon)
                 seller_regon_flag = False
@@ -122,10 +138,10 @@ def mark_recognized_data(picture_path):
                 print("bank sprzedawcy")
                 print(seller_bank)
                 seller_bank_flag = False
-        if "konto" in detections['text'][i].lower() and seller_account_nr_flag:
+        if  (len(detections['text'][i]) == 26 and detections['text'][i].isdigit() and seller_account_nr_flag):
             if int(detections['conf'][i]) > 60:
-                x, y, w, h = detections['left'][i + 1], detections['top'][i + 1], detections['width'][i + 1], \
-                detections['height'][i + 1]
+                x, y, w, h = detections['left'][i], detections['top'][i], detections['width'][i], \
+                detections['height'][i]
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(img, "konto:", (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 seller_account_nr = detections['text'][i + 1]
