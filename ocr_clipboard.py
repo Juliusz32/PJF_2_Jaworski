@@ -18,6 +18,7 @@ def on_click(x, y, button, pressed):
 
     else:
         if pressed_flag:
+            pressed_flag = False
             end_x, end_y = x, y
             print(f"End X: {end_x}, End Y: {end_y}")
             make_screenshot()
